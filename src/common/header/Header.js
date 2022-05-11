@@ -1,11 +1,45 @@
-import "./Header.css";
-import logo from "../../assets/logo.jpeg";
-import { Button } from "@material-ui/core";
-
-import Modal from "@material-ui/core/Modal";
 import React, { useState, useEffect } from "react";
+import "./Header.css";
+import Logo from "../../assets/logo.jpeg";
+import { Button } from "@material-ui/core";
+import Modal from "react-modal";
+import { Tab } from "@material-ui/core";
+import { Tabs } from "@material-ui/core";
+import PropTypes from "prop-types";
+import { Typography } from "@material-ui/core";
+import Register from "../../screens/register/Register";
+import Login from "../../screens/login/Login";
 
-//
+// TABPANEL FROM MATERIAL UI
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Typography component="span">{children}</Typography>}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+// CUSTOM STYLES FOR LOGIN/REGISTER MODAL
 const modalStyle = {
   content: {
     top: "50%",
@@ -17,8 +51,22 @@ const modalStyle = {
   },
 };
 
-const Header = () => {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+//HEADER FUNCTION
+export default function Header(props) {
+  //OPEN/CLOSE LOGIN-REGISTER MODAL
+  const [isOpen, setIsOpen] = useState(false);
+  function openOrCloseModal() {
+    setIsOpen(!isOpen);
+  }
+
+  //HANDLE MODAL TAB VALUES
+  const [tabValue, setTabValue] = React.useState(0);
+  const handleTabValueChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
+  //SET USER'S LOGIN STATUS
+  const [IsUserLoggedIn, setIsUserLoggedIn] = useState(false);
   useEffect(() => {
     const accessToken = sessionStorage.getItem("access-token");
     if (accessToken) {
@@ -26,47 +74,84 @@ const Header = () => {
     }
   }, []);
 
-  const [isOpen, setIsOpen] = useState(false);
-  function openOrCloseModal() {
-    console.log("clicked");
-    setIsOpen(!isOpen);
+  //UPDATE USER'S LOGIN STATUS & CLOSE MODAL
+  const updateLoginStatus = (loggedIn) => {
+    setIsUserLoggedIn(loggedIn);
+    if (isOpen) {
+      openOrCloseModal();
+    }
+  };
+
+  //FUNCTION FOR LOGGING OUT
+  function logoutHandler() {
+    const logoutRequest = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer " + sessionStorage.getItem("access-token"),
+      },
+    };
+    fetch("/api/v1/auth/logout", logoutRequest).then((response) => {
+      if (response.status === 200) {
+        sessionStorage.removeItem("access-token");
+        updateLoginStatus(false);
+      } else {
+        console.log("Invalid access token");
+      }
+    });
   }
 
   return (
     <div>
       <div className="header-container">
-        <img src={logo} alt="logo loading..." className="header-logo" />
-        {isUserLoggedIn ? (
+        <img className="header-logo" src={Logo} alt="logo" />
+
+        {/* DISPLAY LOGIN/LOGOUT BUTTON ACCORDING TO USERS LOGIN STATUS */}
+        {IsUserLoggedIn ? (
           <Button
             variant="contained"
-            className="login-button"
             color="secondary"
+            style={{ float: "right" }}
+            onClick={logoutHandler}
           >
-            LOGOUT
+            Logout
           </Button>
         ) : (
           <Button
             variant="contained"
-            className="login-button"
             color="primary"
+            style={{ float: "right" }}
             onClick={openOrCloseModal}
           >
-            LOGIN
+            Login
           </Button>
         )}
+
+        {/* LOGIN/REGISTER MODAL */}
         <Modal
           ariaHideApp={false}
-          open={isOpen}
-          onClose={openOrCloseModal}
+          isOpen={isOpen}
+          onRequestClose={openOrCloseModal}
           contentLabel="Login-Register Modal"
           style={modalStyle}
           centered
         >
-          <div>asdfasdfas</div>
+          <Tabs value={tabValue} onChange={handleTabValueChange}>
+            <Tab label="Login" {...a11yProps(0)} />
+            <Tab label="Register" {...a11yProps(1)} />
+          </Tabs>
+
+          {/* LOGIN FORM */}
+          <TabPanel value={tabValue} index={0}>
+            <Login updateLoginStatus={updateLoginStatus} />
+          </TabPanel>
+
+          {/* REGISTRATION FORM */}
+          <TabPanel value={tabValue} index={1}>
+            <Register />
+          </TabPanel>
         </Modal>
       </div>
     </div>
   );
-};
-
-export default Header;
+}
