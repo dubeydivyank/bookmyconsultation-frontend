@@ -19,6 +19,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = ({ updateLoginStatus }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  // const [emailIsRequired, setEmailIsRequired] = useState(false);
+  // const [passwordIsRequired, setPasswordIsRequired] = useState(false);
+  const [invalidEmail, setInvalidEmail] = useState(false);
 
   const setParentAnchorElNull = () => {
     setAnchorEl(null);
@@ -36,15 +41,10 @@ const Login = ({ updateLoginStatus }) => {
   const id = open ? "simple-popover" : undefined;
   const classes = useStyles();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [usernameIsRequired, setUsernameIsRequired] = useState(false);
-  const [passwordIsRequired, setPasswordIsRequired] = useState(false);
-
   function handleLoginRequest(e) {
     e.preventDefault();
-    //
-    if (username === "") {
+
+    if (email === "") {
       setAnchorEl(e.currentTarget.parentNode.children[0]);
       return;
     }
@@ -52,10 +52,23 @@ const Login = ({ updateLoginStatus }) => {
       setAnchorEl(e.currentTarget.parentNode.children[2]);
       return;
     }
+    // setEmailIsRequired(email === "" ? true : false);
+    // setPasswordIsRequired(password === "" ? true : false);
+
     //
-    setUsernameIsRequired(username === "" ? true : false);
-    setPasswordIsRequired(password === "" ? true : false);
-    const userCredentials = window.btoa(username + ":" + password);
+    const emailPattern =
+      /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\\.,;:\s@"]{2,})$/i;
+
+    if (!email.match(emailPattern)) {
+      setInvalidEmail(true);
+      return;
+    } else {
+      setInvalidEmail(false);
+    }
+
+    //
+    const userCredentials = window.btoa(email + ":" + password);
+    const url = "http://localhost:8080/auth/login";
     const loginRequest = {
       method: "POST",
       headers: {
@@ -64,7 +77,7 @@ const Login = ({ updateLoginStatus }) => {
         authorization: "Basic " + userCredentials,
       },
     };
-    fetch("/api/v1/auth/login", loginRequest)
+    fetch(url, loginRequest)
       .then((response) => {
         if (!response.ok) {
           return response.json();
@@ -88,15 +101,15 @@ const Login = ({ updateLoginStatus }) => {
     <div>
       <div style={{ textAlign: "center" }}>
         <FormControl required>
-          <InputLabel htmlFor="userName">Username</InputLabel>
+          <InputLabel htmlFor="email">Email</InputLabel>
           <Input
             id="username"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
+            value={email}
+            onChange={({ target }) => setEmail(target.value)}
           />
-          {usernameIsRequired && (
+          {invalidEmail === true && (
             <FormHelperText>
-              <span className="required-error">required</span>
+              <span style={{ color: "red" }}>Enter valid Email</span>
             </FormHelperText>
           )}
         </FormControl>
@@ -109,11 +122,6 @@ const Login = ({ updateLoginStatus }) => {
             onChange={({ target }) => setPassword(target.value)}
             type="password"
           />
-          {passwordIsRequired && (
-            <FormHelperText>
-              <span className="required-error">required</span>
-            </FormHelperText>
-          )}
         </FormControl>
         <br />
         <br />

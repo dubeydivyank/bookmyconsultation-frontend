@@ -52,7 +52,7 @@ const modalStyle = {
 };
 
 //HEADER FUNCTION
-export default function Header(props) {
+export default function Header() {
   //OPEN/CLOSE LOGIN-REGISTER MODAL
   const [isOpen, setIsOpen] = useState(false);
   function openOrCloseModal() {
@@ -84,17 +84,23 @@ export default function Header(props) {
 
   //FUNCTION FOR LOGGING OUT
   function logoutHandler() {
+    // sessionStorage.removeItem("access-token");
+    console.log(sessionStorage.getItem("access-token"));
+    const url = "http://localhost:8080/auth/logout";
     const logoutRequest = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        // "Content-Type": "application/json;charset=UTF-8",
         authorization: "Bearer " + sessionStorage.getItem("access-token"),
       },
     };
-    fetch("/api/v1/auth/logout", logoutRequest).then((response) => {
+    fetch(url, logoutRequest).then((response) => {
+      sessionStorage.removeItem("access-token");
+      // sessionStorage.removeItem("access-token");
+      updateLoginStatus(false);
+      console.log(response.status);
       if (response.status === 200) {
-        sessionStorage.removeItem("access-token");
-        updateLoginStatus(false);
+        // sessionStorage.removeItem("user-info");
       } else {
         console.log("Invalid access token");
       }
@@ -148,7 +154,7 @@ export default function Header(props) {
 
           {/* REGISTRATION FORM */}
           <TabPanel value={tabValue} index={1}>
-            <Register />
+            <Register updateLoginStatus={updateLoginStatus} />
           </TabPanel>
         </Modal>
       </div>

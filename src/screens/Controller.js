@@ -3,7 +3,7 @@ import Home from "../screens/home/Home";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 const Controller = () => {
-  const baseUrl = "/api/v1/";
+  const baseUrl = "http://localhost:8080/";
   return (
     <Router>
       <div className="main-container">
