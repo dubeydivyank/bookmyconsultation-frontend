@@ -85,7 +85,7 @@ export default function Header() {
   //FUNCTION FOR LOGGING OUT
   function logoutHandler() {
     // sessionStorage.removeItem("access-token");
-    console.log(sessionStorage.getItem("access-token"));
+    // console.log(sessionStorage.getItem("access-token"));
     const url = "http://localhost:8080/auth/logout";
     const logoutRequest = {
       method: "POST",
@@ -95,12 +95,11 @@ export default function Header() {
       },
     };
     fetch(url, logoutRequest).then((response) => {
-      sessionStorage.removeItem("access-token");
-      // sessionStorage.removeItem("access-token");
-      updateLoginStatus(false);
-      console.log(response.status);
+      // console.log(response.status);
       if (response.status === 200) {
-        // sessionStorage.removeItem("user-info");
+        sessionStorage.removeItem("access-token");
+        sessionStorage.removeItem("user-info");
+        updateLoginStatus(false);
       } else {
         console.log("Invalid access token");
       }

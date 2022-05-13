@@ -79,17 +79,21 @@ const Login = ({ updateLoginStatus }) => {
     };
     fetch(url, loginRequest)
       .then((response) => {
-        if (!response.ok) {
-          return response.json();
-        }
-        return response;
+        // if (!response.ok) {
+        return response.json();
+        // }
+        // return response;
       })
       .then((response) => {
-        if (response.headers) {
-          sessionStorage.setItem(
-            "access-token",
-            response.headers.get("access-token")
-          );
+        if (response.accessToken !== null) {
+          console.log(response.accessToken);
+          const userInfo = {
+            userId: response?.id,
+            userName: response?.firstName + " " + response?.lastName,
+            email: response?.emailAddress,
+          };
+          sessionStorage.setItem("access-token", response.accessToken);
+          sessionStorage.setItem("user-info", JSON.stringify(userInfo));
           updateLoginStatus(true);
         } else {
           console.log(response.body);
