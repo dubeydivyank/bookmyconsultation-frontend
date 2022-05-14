@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import "./Doctor.css";
+import "./Doctor.css";
 import {
   Paper,
   Typography,
@@ -10,8 +10,8 @@ import {
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import Modal from "react-modal";
-// import DoctorDetails from "./DoctorDetails";
-// import BookAppointment from "./BookAppointment";
+import DoctorDetails from "./DoctorDetails";
+import BookAppointment from "./BookAppointment";
 Modal.setAppElement(document.getElementById("root"));
 
 const detailsModal = {
@@ -200,13 +200,13 @@ const DoctorList = () => {
           onRequestClose={closeModalHandler}
           style={modalType === "details" ? detailsModal : bookingsModal}
         >
-          {/* {modalType === "details" && <DoctorDetails doctor={doctor} />}
-          {modalType === "bookings" && (
+          {modalType === "details" && <DoctorDetails doctor={doctor} />}
+          {/* {modalType === "bookings" && (
             <BookAppointment
-              baseUrl={baseUrl}
+              // baseUrl={baseUrl}
               doctor={doctor}
-              getUserAppointments={getUserAppointments}
-              userAppointments={userAppointments}
+              // getUserAppointments={getUserAppointments}
+              // userAppointments={userAppointments}
               closeModalHandler={closeModalHandler}
             />
           )} */}
