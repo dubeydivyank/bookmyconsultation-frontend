@@ -38,7 +38,7 @@ const bookingsModal = {
   },
 };
 
-const DoctorList = () => {
+const DoctorList = ({ getUserAppointments, userAppointments }) => {
   const [speciality, setSpeciality] = useState("");
   const [specialityList, setSpecialityList] = useState([]);
   const [doctorsList, setDoctorList] = useState([]);
@@ -201,15 +201,14 @@ const DoctorList = () => {
           style={modalType === "details" ? detailsModal : bookingsModal}
         >
           {modalType === "details" && <DoctorDetails doctor={doctor} />}
-          {/* {modalType === "bookings" && (
+          {modalType === "bookings" && (
             <BookAppointment
-              // baseUrl={baseUrl}
               doctor={doctor}
-              // getUserAppointments={getUserAppointments}
-              // userAppointments={userAppointments}
+              getUserAppointments={getUserAppointments}
+              userAppointments={userAppointments}
               closeModalHandler={closeModalHandler}
             />
-          )} */}
+          )}
         </Modal>
       </Grid>
     </div>
