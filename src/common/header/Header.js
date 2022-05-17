@@ -101,8 +101,10 @@ export default function Header({ isUserLoggedIn, setIsUserLoggedIn }) {
         console.log(rawResponse.status);
         console.log(sessionStorage.getItem("access-token"));
         sessionStorage.removeItem("access-token");
-        sessionStorage.removeItem("user-info");
+        // sessionStorage.removeItem("user-info");
         sessionStorage.removeItem("user-id");
+        sessionStorage.removeItem("user-firstName");
+        sessionStorage.removeItem("user-lastName");
 
         updateLoginStatus(false);
         // setIsUserLoggedIn(false);
@@ -135,15 +137,20 @@ export default function Header({ isUserLoggedIn, setIsUserLoggedIn }) {
       if (rawResponse.ok) {
         const response = await rawResponse.json();
         sessionStorage.setItem("access-token", response.accessToken);
-        sessionStorage.setItem("user-info", response);
         sessionStorage.setItem("user-id", response.id);
+        sessionStorage.setItem("user-firstName", response.firstName);
+        sessionStorage.setItem("user-lastName", response.lastName);
+        // sessionStorage.setItem("user-info", JSON.stringify(response));
+        // sessionStorage.setItem("user-id", JSON.stringify(response.id));
+        console.log(response.id);
+        console.log(`${response.firstName} ${response.lastName}`);
         updateLoginStatus(true);
         // setIsUserLoggedIn(true);
         // if (isOpen) {
         //   openOrCloseModal();
         // }
-        console.log(response);
         console.log(sessionStorage.getItem("access-token"));
+        console.log(sessionStorage.getItem("user-info"));
       } else {
         const error = new Error();
         error.message = "Something went wrong.";
