@@ -96,18 +96,15 @@ export default function Header({ isUserLoggedIn, setIsUserLoggedIn }) {
     try {
       const rawResponse = await fetch(url, logoutRequest);
       if (rawResponse.status === 200) {
-        console.log(rawResponse);
-        console.log(rawResponse.ok);
-        console.log(rawResponse.status);
-        console.log(sessionStorage.getItem("access-token"));
+        // console.log(rawResponse);
+        // console.log(rawResponse.ok);
+        // console.log(rawResponse.status);
+        // console.log(sessionStorage.getItem("access-token"));
         sessionStorage.removeItem("access-token");
-        // sessionStorage.removeItem("user-info");
         sessionStorage.removeItem("user-id");
         sessionStorage.removeItem("user-firstName");
         sessionStorage.removeItem("user-lastName");
-
         updateLoginStatus(false);
-        // setIsUserLoggedIn(false);
       } else {
         const error = new Error();
         error.message = "Something went wrong.";
@@ -142,15 +139,7 @@ export default function Header({ isUserLoggedIn, setIsUserLoggedIn }) {
         sessionStorage.setItem("user-lastName", response.lastName);
         // sessionStorage.setItem("user-info", JSON.stringify(response));
         // sessionStorage.setItem("user-id", JSON.stringify(response.id));
-        console.log(response.id);
-        console.log(`${response.firstName} ${response.lastName}`);
         updateLoginStatus(true);
-        // setIsUserLoggedIn(true);
-        // if (isOpen) {
-        //   openOrCloseModal();
-        // }
-        console.log(sessionStorage.getItem("access-token"));
-        console.log(sessionStorage.getItem("user-info"));
       } else {
         const error = new Error();
         error.message = "Something went wrong.";

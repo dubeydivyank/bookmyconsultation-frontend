@@ -61,61 +61,6 @@ const Login = ({ updateLoginStatus, loginHandler }) => {
       setInvalidEmail(false);
     }
     loginHandler(email, password);
-    //
-    // const userCredentials = window.btoa(email + ":" + password);
-    // const url = "http://localhost:8080/auth/login";
-    // const loginRequest = {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json;charset=UTF-8",
-    //     Accept: "application/json",
-    //     authorization: "Basic " + userCredentials,
-    //   },
-    // };
-
-    // try {
-    //   const rawResponse = await fetch(url, loginRequest);
-    //   if (rawResponse.ok) {
-    //     const response = await rawResponse.json();
-    //     sessionStorage.setItem("access-token", response.accessToken);
-    //     sessionStorage.setItem("user-info", response);
-    //     sessionStorage.setItem("user-id", response.id);
-    //     updateLoginStatus(true);
-    //     console.log(response);
-    //     console.log(sessionStorage.getItem("access-token"));
-    //   } else {
-    //     const error = new Error();
-    //     error.message = "Something went wrong.";
-    //     throw error;
-    //   }
-    // } catch (error) {
-    //   alert(`${error.message} Please enter correct details.`);
-    // }
-
-    // fetch(url, loginRequest)
-    //   .then((response) => {
-    //     // if (!response.ok) {
-    //     return response.json();
-    //     // }
-    //     // return response;
-    //   })
-    //   .then((response) => {
-    //     if (response.accessToken !== null) {
-    //       console.log(response.accessToken);
-    //       const userInfo = {
-    //         userId: response?.id,
-    //         userName: response?.firstName + " " + response?.lastName,
-    //         email: response?.emailAddress,
-    //       };
-    //       sessionStorage.setItem("access-token", response.accessToken);
-    //       sessionStorage.setItem("user-info", userInfo);
-    //       sessionStorage.setItem("user-Id", userInfo.userId);
-
-    //       updateLoginStatus(true);
-    //     } else {
-    //       console.log(response.body);
-    //     }
-    //   });
   }
 
   return (

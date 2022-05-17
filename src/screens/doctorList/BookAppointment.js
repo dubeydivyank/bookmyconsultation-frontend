@@ -48,7 +48,7 @@ const BookAppointment = ({
   const [medicalHistory, setMedicalHistory] = useState("");
   const [symptoms, setSymptoms] = useState("");
   const [bookedSuccessfully, setBookedSuccessfully] = useState(false);
-  const [slotRequired, setSlotRequired] = useState(true);
+  const [slotRequired, setSlotRequired] = useState("none");
 
   const dateChangeHandler = (date) => {
     setSelectDate(dateFormatter(date));
@@ -57,7 +57,7 @@ const BookAppointment = ({
   const slotChangeHandler = (event) => {
     setSelectSlot(event.target.value);
     //insert here
-    setSlotRequired(false);
+    setSlotRequired("none");
   };
 
   const getAvailableSlots = async () => {
@@ -81,7 +81,7 @@ const BookAppointment = ({
     if (e) e.preventDefault();
 
     if (selectSlot === null || selectSlot === "" || selectSlot === "None") {
-      setSlotRequired(true);
+      setSlotRequired("block");
       return;
     }
 
