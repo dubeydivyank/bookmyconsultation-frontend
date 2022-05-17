@@ -17,12 +17,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = ({ updateLoginStatus }) => {
+const Login = ({ updateLoginStatus, loginHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [emailIsRequired, setEmailIsRequired] = useState(false);
-  // const [passwordIsRequired, setPasswordIsRequired] = useState(false);
   const [invalidEmail, setInvalidEmail] = useState(false);
 
   const setParentAnchorElNull = () => {
@@ -41,7 +39,7 @@ const Login = ({ updateLoginStatus }) => {
   const id = open ? "simple-popover" : undefined;
   const classes = useStyles();
 
-  function handleLoginRequest(e) {
+  async function handleLoginRequest(e) {
     e.preventDefault();
 
     if (email === "") {
@@ -52,10 +50,7 @@ const Login = ({ updateLoginStatus }) => {
       setAnchorEl(e.currentTarget.parentNode.children[2]);
       return;
     }
-    // setEmailIsRequired(email === "" ? true : false);
-    // setPasswordIsRequired(password === "" ? true : false);
 
-    //
     const emailPattern =
       /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\\.,;:\s@"]{2,})$/i;
 
@@ -65,40 +60,62 @@ const Login = ({ updateLoginStatus }) => {
     } else {
       setInvalidEmail(false);
     }
-
+    loginHandler(email, password);
     //
-    const userCredentials = window.btoa(email + ":" + password);
-    const url = "http://localhost:8080/auth/login";
-    const loginRequest = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        authorization: "Basic " + userCredentials,
-      },
-    };
-    fetch(url, loginRequest)
-      .then((response) => {
-        // if (!response.ok) {
-        return response.json();
-        // }
-        // return response;
-      })
-      .then((response) => {
-        if (response.accessToken !== null) {
-          console.log(response.accessToken);
-          const userInfo = {
-            userId: response?.id,
-            userName: response?.firstName + " " + response?.lastName,
-            email: response?.emailAddress,
-          };
-          sessionStorage.setItem("access-token", response.accessToken);
-          sessionStorage.setItem("user-info", JSON.stringify(userInfo));
-          updateLoginStatus(true);
-        } else {
-          console.log(response.body);
-        }
-      });
+    // const userCredentials = window.btoa(email + ":" + password);
+    // const url = "http://localhost:8080/auth/login";
+    // const loginRequest = {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json;charset=UTF-8",
+    //     Accept: "application/json",
+    //     authorization: "Basic " + userCredentials,
+    //   },
+    // };
+
+    // try {
+    //   const rawResponse = await fetch(url, loginRequest);
+    //   if (rawResponse.ok) {
+    //     const response = await rawResponse.json();
+    //     sessionStorage.setItem("access-token", response.accessToken);
+    //     sessionStorage.setItem("user-info", response);
+    //     sessionStorage.setItem("user-id", response.id);
+    //     updateLoginStatus(true);
+    //     console.log(response);
+    //     console.log(sessionStorage.getItem("access-token"));
+    //   } else {
+    //     const error = new Error();
+    //     error.message = "Something went wrong.";
+    //     throw error;
+    //   }
+    // } catch (error) {
+    //   alert(`${error.message} Please enter correct details.`);
+    // }
+
+    // fetch(url, loginRequest)
+    //   .then((response) => {
+    //     // if (!response.ok) {
+    //     return response.json();
+    //     // }
+    //     // return response;
+    //   })
+    //   .then((response) => {
+    //     if (response.accessToken !== null) {
+    //       console.log(response.accessToken);
+    //       const userInfo = {
+    //         userId: response?.id,
+    //         userName: response?.firstName + " " + response?.lastName,
+    //         email: response?.emailAddress,
+    //       };
+    //       sessionStorage.setItem("access-token", response.accessToken);
+    //       sessionStorage.setItem("user-info", userInfo);
+    //       sessionStorage.setItem("user-Id", userInfo.userId);
+
+    //       updateLoginStatus(true);
+    //     } else {
+    //       console.log(response.body);
+    //     }
+    //   });
   }
 
   return (

@@ -50,9 +50,9 @@ const modalStyle = {
     transform: "translate(-50%, -50%)",
   },
 };
-
+//======================================================================================================
 //HEADER FUNCTION
-export default function Header() {
+export default function Header({ isUserLoggedIn, setIsUserLoggedIn }) {
   //OPEN/CLOSE LOGIN-REGISTER MODAL
   const [isOpen, setIsOpen] = useState(false);
   function openOrCloseModal() {
@@ -66,13 +66,13 @@ export default function Header() {
   };
 
   //SET USER'S LOGIN STATUS
-  const [IsUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  useEffect(() => {
-    const accessToken = sessionStorage.getItem("access-token");
-    if (accessToken) {
-      setIsUserLoggedIn(true);
-    }
-  }, []);
+  // const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  // useEffect(() => {
+  //   const accessToken = sessionStorage.getItem("access-token");
+  //   if (accessToken) {
+  //     setIsUserLoggedIn(true);
+  //   }
+  // }, []);
 
   //UPDATE USER'S LOGIN STATUS & CLOSE MODAL
   const updateLoginStatus = (loggedIn) => {
@@ -83,28 +83,83 @@ export default function Header() {
   };
 
   //FUNCTION FOR LOGGING OUT
-  function logoutHandler() {
-    // sessionStorage.removeItem("access-token");
-    // console.log(sessionStorage.getItem("access-token"));
+  const logoutHandler = async () => {
     const url = "http://localhost:8080/auth/logout";
     const logoutRequest = {
       method: "POST",
       headers: {
         // "Content-Type": "application/json;charset=UTF-8",
-        authorization: "Bearer " + sessionStorage.getItem("access-token"),
+        Authorization: "Bearer " + sessionStorage.getItem("access-token"),
       },
     };
-    fetch(url, logoutRequest).then((response) => {
-      // console.log(response.status);
-      if (response.status === 200) {
+
+    try {
+      const rawResponse = await fetch(url, logoutRequest);
+      if (rawResponse.status === 200) {
+        console.log(rawResponse);
+        console.log(rawResponse.ok);
+        console.log(rawResponse.status);
+        console.log(sessionStorage.getItem("access-token"));
         sessionStorage.removeItem("access-token");
         sessionStorage.removeItem("user-info");
+        sessionStorage.removeItem("user-id");
+
         updateLoginStatus(false);
+        // setIsUserLoggedIn(false);
       } else {
-        console.log("Invalid access token");
+        const error = new Error();
+        error.message = "Something went wrong.";
+        console.log("User Could not be logged out");
+        console.log(sessionStorage.getItem("access-token"));
+        throw error;
       }
-    });
-  }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const loginHandler = async (email, password) => {
+    const userCredentials = window.btoa(email + ":" + password);
+    const url = "http://localhost:8080/auth/login";
+    const loginRequest = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        Accept: "application/json",
+        authorization: "Basic " + userCredentials,
+      },
+    };
+
+    try {
+      const rawResponse = await fetch(url, loginRequest);
+      if (rawResponse.ok) {
+        const response = await rawResponse.json();
+        sessionStorage.setItem("access-token", response.accessToken);
+        sessionStorage.setItem("user-info", response);
+        sessionStorage.setItem("user-id", response.id);
+        updateLoginStatus(true);
+        // setIsUserLoggedIn(true);
+        // if (isOpen) {
+        //   openOrCloseModal();
+        // }
+        console.log(response);
+        console.log(sessionStorage.getItem("access-token"));
+      } else {
+        const error = new Error();
+        error.message = "Something went wrong.";
+        throw error;
+      }
+    } catch (error) {
+      alert(`${error.message} Please enter correct details.`);
+    }
+  };
+
+  useEffect(() => {
+    const accessToken = sessionStorage.getItem("access-token");
+    if (accessToken) {
+      setIsUserLoggedIn(true);
+    }
+  }, []);
 
   return (
     <div>
@@ -112,7 +167,7 @@ export default function Header() {
         <img className="header-logo" src={Logo} alt="logo" />
 
         {/* DISPLAY LOGIN/LOGOUT BUTTON ACCORDING TO USERS LOGIN STATUS */}
-        {IsUserLoggedIn ? (
+        {isUserLoggedIn ? (
           <Button
             variant="contained"
             color="secondary"
@@ -148,12 +203,18 @@ export default function Header() {
 
           {/* LOGIN FORM */}
           <TabPanel value={tabValue} index={0}>
-            <Login updateLoginStatus={updateLoginStatus} />
+            <Login
+              updateLoginStatus={updateLoginStatus}
+              loginHandler={loginHandler}
+            />
           </TabPanel>
 
           {/* REGISTRATION FORM */}
           <TabPanel value={tabValue} index={1}>
-            <Register updateLoginStatus={updateLoginStatus} />
+            <Register
+              updateLoginStatus={updateLoginStatus}
+              loginHandler={loginHandler}
+            />
           </TabPanel>
         </Modal>
       </div>

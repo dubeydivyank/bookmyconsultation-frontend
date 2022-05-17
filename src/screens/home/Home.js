@@ -1,11 +1,13 @@
 import Header from "../../common/header/Header";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DoctorList from "../doctorList/DoctorList";
 import Appointment from "../appointment/Appointment";
 import { Tab, Tabs } from "@material-ui/core";
 
 const Home = () => {
+  const emailId = sessionStorage.getItem("user-id");
   const [value, setValue] = useState(0);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [userAppointments, setUserAppointments] = useState([]);
 
   const tabSwitchHandler = (event, value) => {
@@ -13,22 +15,20 @@ const Home = () => {
   };
 
   //SET USER'S LOGIN STATUS
-  const [IsUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  useEffect(() => {
-    const accessToken = sessionStorage.getItem("access-token");
-    if (accessToken) {
-      setIsUserLoggedIn(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const accessToken = sessionStorage.getItem("access-token");
+  //   if (accessToken) {
+  //     setIsUserLoggedIn(true);
+  //   }
+  // }, []);
 
   //GET APPOINTMENTS
   const getUserAppointments = async () => {
+    // console.log(emailId);
     const url = `http://localhost:8080/users/${emailId}/appointments`;
     const accessToken = sessionStorage.getItem("access-token");
-    // console.log(url, accessToken);
 
     try {
-      // debugger;
       const rawResponse = await fetch(url, {
         method: "GET",
         headers: {
@@ -40,9 +40,7 @@ const Home = () => {
 
       if (rawResponse.ok) {
         const response = await rawResponse.json();
-        // console.log(response);
         setUserAppointments(response);
-        // console.log(setAvailableSlots);
       } else {
         const error = new Error();
         error.message = "Some Error Occurred";
@@ -53,14 +51,17 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    if (isLogin === true) {
+    if (isUserLoggedIn === true) {
       getUserAppointments();
     }
-    // eslint-disable-next-line
-  }, [isLogin]);
+  }, [isUserLoggedIn]);
+
   return (
     <div>
-      <Header />
+      <Header
+        isUserLoggedIn={isUserLoggedIn}
+        setIsUserLoggedIn={setIsUserLoggedIn}
+      />
       <Tabs
         variant="fullWidth"
         indicatorColor="primary"
@@ -78,8 +79,8 @@ const Home = () => {
       )}
       {value === 1 && (
         <Appointment
-          // userAppointments={userAppointments}
-          IsUserLoggedIn={IsUserLoggedIn}
+          userAppointments={userAppointments}
+          isUserLoggedIn={isUserLoggedIn}
         />
       )}
     </div>

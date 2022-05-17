@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Register = ({ updateLoginStatus }) => {
+const Register = ({ updateLoginStatus, loginHandler }) => {
   //HANDLE USER REGISTRATION REQUEST
   const [anchorEl, setAnchorEl] = useState(null);
   const [password, setPassword] = useState("");
@@ -108,7 +108,8 @@ const Register = ({ updateLoginStatus }) => {
       .then((response) => response.json())
       .then((response) => {
         // if (response.id) {
-        updateLoginStatus(true);
+        // updateLoginStatus(true);
+        loginHandler(userDetails.emailId, userDetails.password);
         setRegistrationSuccessMsg(response.salt !== null ? true : false);
         // }
       });
